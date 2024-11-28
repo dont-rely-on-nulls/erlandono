@@ -1,0 +1,20 @@
+#+TITLE: Erlando 
+
+* About
+
+This is a fork of [[https://github.com/rabbitmq/erlando][erlando]]; a library that adds extra syntax expressions for Erlang, such as /cut/, and /do-notation/,
+improving Erlang's usability.
+
+* Roadmap
+
+- [] Latest Erlang
+- [] Add CI that runs tests
+- [] Publish as a separate package
+
+* Instructions
+
+For now, because the goal is just updating it and making available as a package, the functionality is the same as the
+original version. Thus, you can check how to use the library [[https://github.com/rabbitmq/erlando/blob/master/README.md][here]].
+
+# Test commands that should be included in CI later
+# test_do:test() test_cut:test() test_import_as:test()
