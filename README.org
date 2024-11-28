@@ -7,9 +7,12 @@ improving Erlang's usability.
 
 * Roadmap
 
-- [] Latest Erlang
-- [] Add CI that runs tests
-- [] Publish as a separate package
+** TODOs
+- Make it work with latest Erlang
+- Add CI that runs tests
+- Publish as a separate package
+
+** Done
 
 * Instructions
 
