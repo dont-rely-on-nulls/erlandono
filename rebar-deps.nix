@@ -3,5 +3,6 @@ let fetchOnly = { src, ... }: src;
 in { builder ? fetchOnly, fetchHex, fetchgit, fetchFromGitHub, overrides ? (x: y: { }) }:
 let
   self = packages // (overrides self packages);
-  packages = with self;
+  packages = with self; {
+  };
 in self

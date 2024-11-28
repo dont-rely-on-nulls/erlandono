@@ -1,5 +1,8 @@
 #+TITLE: Erlando 
 
+#+html: <a href="https://builtwithnix.org"><img alt="built with nix" src="https://builtwithnix.org/badge.svg" /></a><br>
+#+html: <a href="https://github.com/dont-rely-on-nulls/erlandono/actions/workflows/build.yml"> <img alt="[Build] erlandono" src="https://github.com/dont-rely-on-nulls/erlandono/actions/workflows/build.yml/badge.svg" /></a>
+
 * About
 
 This is a fork of [[https://github.com/rabbitmq/erlando][erlando]]; a library that adds extra syntax expressions for Erlang, such as /cut/, and /do-notation/,
@@ -21,3 +24,17 @@ original version. Thus, you can check how to use the library [[https://github.co
 
 # Test commands that should be included in CI later
 # test_do:test() test_cut:test() test_import_as:test()
+
+* License
+
+(The MPL)
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+the License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is Erlando.
+
+The Initial Developer of the Original Code is VMware, Inc.
+Copyright (c) 2011-2013 VMware, Inc.  All rights reserved.
