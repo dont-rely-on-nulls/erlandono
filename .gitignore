@@ -19,3 +19,7 @@ logs
 *.iml
 rebar3.crashdump
 *~
+
+# Extras
+result
+doc
