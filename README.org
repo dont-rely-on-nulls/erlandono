@@ -1,7 +1,8 @@
-#+TITLE: Erlando 
+#+TITLE: Erlandono
 
 #+html: <a href="https://builtwithnix.org"><img alt="built with nix" src="https://builtwithnix.org/badge.svg" /></a><br>
 #+html: <a href="https://github.com/dont-rely-on-nulls/erlandono/actions/workflows/build.yml"> <img alt="[Build] erlandono" src="https://github.com/dont-rely-on-nulls/erlandono/actions/workflows/build.yml/badge.svg" /></a>
+#+html: <a href="https://github.com/dont-rely-on-nulls/erlandono/actions/workflows/create_release.yml"> <img alt="[Release] Create Release" src="https://github.com/dont-rely-on-nulls/erlandono/actions/workflows/create_release.yml/badge.svg" /></a>
 
 * About
 
@@ -11,11 +12,9 @@ improving Erlang's usability.
 * Roadmap
 
 ** TODOs
-- Make it work with latest Erlang
-- Add CI that runs tests
-- Publish as a separate package
-
-** Done
+- [X] Make it work with latest Erlang
+- [X] Publish as a separate package
+- [ ] Add CI that runs tests
 
 * Instructions
 
