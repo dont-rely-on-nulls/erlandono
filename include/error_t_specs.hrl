@@ -1,0 +1,2 @@
+-spec mzero() -> monad(_A).
+-spec mplus(monad(A), monad(A)) -> monad(A).
