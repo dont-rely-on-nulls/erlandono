@@ -1,3 +1,3 @@
--spec '>>='(error_m(A), fun( (A) -> error_m(B) )) -> error_m(B).
+-spec '>>='(error_m(A), fun((A) -> error_m(B))) -> error_m(B).
 -spec return(A) -> error_m(A).
 -spec fail(any()) -> error_m(_A).

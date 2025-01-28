@@ -1,10 +1,12 @@
-{application, erlandono,
- [{description, "Syntax extensions for Erlang"},
-  {vsn, "3.1.2"},
-  {modules, []},
-  {registered, []},
-  {applications,
-    [kernel,
-     stdlib]},
-  {licenses, ["MPL-1.1"]},
-  {links, [{"GitHub", "https://github.com/dont-rely-on-nulls/erlandono"}]}]}.
+{application, erlandono, [
+    {description, "Syntax extensions for Erlang"},
+    {vsn, "3.1.2"},
+    {modules, []},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib
+    ]},
+    {licenses, ["MPL-1.1"]},
+    {links, [{"GitHub", "https://github.com/dont-rely-on-nulls/erlandono"}]}
+]}.

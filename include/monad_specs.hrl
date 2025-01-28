@@ -1,3 +1,3 @@
 -spec return(A) -> monad(A).
 -spec fail(any()) -> monad(_A).
--spec '>>='(monad(A), fun ((A) -> monad(B))) -> monad(B).
+-spec '>>='(monad(A), fun((A) -> monad(B))) -> monad(B).

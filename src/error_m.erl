@@ -25,17 +25,14 @@
 %% for Left and 'ok' for Right.
 -type error_m(A) :: ok | {ok, A} | {error, any()}.
 
-
--spec '>>='(error_m(A), fun( (A) -> error_m(B) )) -> error_m(B).
+-spec '>>='(error_m(A), fun((A) -> error_m(B))) -> error_m(B).
 '>>='({error, _Err} = Error, _Fun) -> Error;
-'>>='({ok, Result},           Fun) -> Fun(Result);
-'>>='(ok,                     Fun) -> Fun(ok).
-
+'>>='({ok, Result}, Fun) -> Fun(Result);
+'>>='(ok, Fun) -> Fun(ok).
 
 -spec return(A) -> error_m(A).
 return(ok) -> ok;
-return(X ) -> {ok, X}.
-
+return(X) -> {ok, X}.
 
 -spec fail(any()) -> error_m(_A).
 fail(X) ->

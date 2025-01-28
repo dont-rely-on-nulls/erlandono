@@ -22,30 +22,29 @@
 
 -export([guard/2, msum/2, mfilter/3]).
 
--type monad()         :: module() | {module(), monad()}.
+-type monad() :: module() | {module(), monad()}.
 -type monadic(_M, _A) :: any().
-
 
 %% MonadPlus primitives
 -callback mzero() -> monadic(_M, _A).
 -callback mplus(monadic(M, A), monadic(M, A)) -> monadic(M, A).
 
-
 %% Utility functions
 -spec guard(M, boolean()) -> monadic(M, ok).
-guard(Monad, true)  -> Monad:return(ok);
+guard(Monad, true) -> Monad:return(ok);
 guard(Monad, false) -> Monad:fail("").
-
 
 -spec msum(M, [monadic(M, A)]) -> monadic(M, A).
 msum(Monad, List) ->
     lists:foldr(Monad:mplus(_, _), Monad:mzero(), List).
 
-
--spec mfilter(M, fun( (A) -> boolean() ), monadic(M, A)) -> monadic(M, A).
+-spec mfilter(M, fun((A) -> boolean()), monadic(M, A)) -> monadic(M, A).
 mfilter(Monad, Pred, X) ->
-    do([Monad || A <- X,
-                 case Pred(A) of
-                     true  -> return(A);
-                     false -> Monad:mzero()
-                 end]).
+    do([
+        Monad
+     || A <- X,
+        case Pred(A) of
+            true -> return(A);
+            false -> Monad:mzero()
+        end
+    ]).
