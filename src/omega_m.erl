@@ -35,23 +35,18 @@
 -behaviour(monad_plus).
 -export([mzero/0, mplus/2]).
 
-
--spec '>>='([A], fun( (A) -> [B] )) -> [B].
+-spec '>>='([A], fun((A) -> [B])) -> [B].
 '>>='(X, Fun) ->
     diagonal([Fun(E) || E <- X]).
-
 
 -spec return(A) -> [A].
 return(X) -> [X].
 
-
 -spec fail(any()) -> [_A].
 fail(_X) -> [].
 
-
 -spec mzero() -> [_A].
 mzero() -> [].
-
 
 -spec mplus([A], [A]) -> [A].
 mplus(X, Y) ->
@@ -68,10 +63,10 @@ mplus(X, Y) ->
 -spec diagonal([[A]]) -> [A].
 diagonal(LoL) -> lists:append(stripe(LoL)).
 
-stripe([])           -> [];
-stripe([[]|Xss])     -> stripe(Xss);
-stripe([[X|Xs]|Xss]) -> [[X] | zip_cons(Xs, stripe(Xss))].
+stripe([]) -> [];
+stripe([[] | Xss]) -> stripe(Xss);
+stripe([[X | Xs] | Xss]) -> [[X] | zip_cons(Xs, stripe(Xss))].
 
-zip_cons([], Ys)         -> Ys;
-zip_cons(Xs, [])         -> [[X] || X <- Xs];
-zip_cons([X|Xs], [Y|Ys]) -> [[X|Y] | zip_cons(Xs, Ys)].
+zip_cons([], Ys) -> Ys;
+zip_cons(Xs, []) -> [[X] || X <- Xs];
+zip_cons([X | Xs], [Y | Ys]) -> [[X | Y] | zip_cons(Xs, Ys)].

@@ -21,22 +21,22 @@
 
 -export([join/2, sequence/2]).
 
--type monad()         :: module() | {module(), monad()}.
+-type monad() :: module() | {module(), monad()}.
 -type monadic(_M, _A) :: any().
 
-
 %% Monad primitives
--callback '>>='(monadic(M, A), fun( (A) -> monadic(M, B) )) -> monadic(M, B) when M :: monad().
+-callback '>>='(monadic(M, A), fun((A) -> monadic(M, B))) -> monadic(M, B) when M :: monad().
 -callback return(A) -> monadic(M, A) when M :: monad().
 -callback fail(any()) -> monadic(M, _A) when M :: monad().
-
 
 %% Utility functions
 -spec join(M, monadic(M, monadic(M, A))) -> monadic(M, A).
 join(Monad, X) ->
-    do([Monad || Y <- X,
-                 Y]).
-
+    do([
+        Monad
+     || Y <- X,
+        Y
+    ]).
 
 -spec sequence(M, [monadic(M, A)]) -> monadic(M, [A]).
 sequence(Monad, Xs) ->
@@ -44,6 +44,9 @@ sequence(Monad, Xs) ->
 
 sequence(Monad, [], Acc) ->
     do([Monad || return(lists:reverse(Acc))]);
-sequence(Monad, [X|Xs], Acc) ->
-    do([Monad || E <- X,
-                 sequence(Monad, Xs, [E|Acc])]).
+sequence(Monad, [X | Xs], Acc) ->
+    do([
+        Monad
+     || E <- X,
+        sequence(Monad, Xs, [E | Acc])
+    ]).

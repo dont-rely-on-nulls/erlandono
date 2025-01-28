@@ -28,54 +28,65 @@ test(Funs, Options) ->
                 {ok, passed} ->
                     io:format("Test suite '~p' passed.~n", [Name]);
                 {error, Reason} ->
-                    io:format("Test suite '~p' failed with ~p.~n",
-                              [Name, Reason])
+                    io:format(
+                        "Test suite '~p' failed with ~p.~n",
+                        [Name, Reason]
+                    )
             end;
         false ->
             ok
     end,
     case Result of
         {ok, passed} -> ok;
-        _            -> Result
+        _ -> Result
     end.
-
 
 test_funs(ErrorT, []) ->
     ErrorT:return(passed);
-
-test_funs(ErrorT, [{Module, {Label, FunName}}|Funs])
-  when is_atom(Module) andalso is_atom(FunName) ->
-    do([ErrorT || hoist(ErrorT, Label, fun () -> Module:FunName() end),
-                  test_funs(ErrorT, Funs)]);
-
-test_funs(ErrorT, [{Module, FunName}|Funs])
-  when is_atom(Module) andalso is_atom(FunName)
-       andalso is_function({Module, FunName}, 0) ->
-    do([ErrorT || hoist(ErrorT, FunName, fun () -> Module:FunName() end),
-                  test_funs(ErrorT, Funs)]);
-
-test_funs(ErrorT, [{_Module, []}|Funs]) ->
+test_funs(ErrorT, [{Module, {Label, FunName}} | Funs]) when
+    is_atom(Module) andalso is_atom(FunName)
+->
+    do([
+        ErrorT
+     || hoist(ErrorT, Label, fun() -> Module:FunName() end),
+        test_funs(ErrorT, Funs)
+    ]);
+test_funs(ErrorT, [{Module, FunName} | Funs]) when
+    is_atom(Module) andalso is_atom(FunName) andalso
+        is_function({Module, FunName}, 0)
+->
+    do([
+        ErrorT
+     || hoist(ErrorT, FunName, fun() -> Module:FunName() end),
+        test_funs(ErrorT, Funs)
+    ]);
+test_funs(ErrorT, [{_Module, []} | Funs]) ->
     test_funs(ErrorT, Funs);
-
-test_funs(ErrorT, [{Module, [FunName|FunNames]}|Funs])
-  when is_atom(Module) andalso is_atom(FunName) ->
+test_funs(ErrorT, [{Module, [FunName | FunNames]} | Funs]) when
+    is_atom(Module) andalso is_atom(FunName)
+->
     test_funs(ErrorT, [{Module, FunName}, {Module, FunNames} | Funs]);
-
-test_funs(ErrorT, [{Label, Fun}|Funs]) when is_function(Fun, 0) ->
-    do([ErrorT || hoist(ErrorT, Label, Fun),
-                  test_funs(ErrorT, Funs)]);
-
-test_funs(ErrorT, [Fun|Funs]) when is_function(Fun, 0) ->
-    do([ErrorT || hoist(ErrorT, anonymous_function, Fun),
-                  test_funs(ErrorT, Funs)]).
-
+test_funs(ErrorT, [{Label, Fun} | Funs]) when is_function(Fun, 0) ->
+    do([
+        ErrorT
+     || hoist(ErrorT, Label, Fun),
+        test_funs(ErrorT, Funs)
+    ]);
+test_funs(ErrorT, [Fun | Funs]) when is_function(Fun, 0) ->
+    do([
+        ErrorT
+     || hoist(ErrorT, anonymous_function, Fun),
+        test_funs(ErrorT, Funs)
+    ]).
 
 hoist(ErrorT, Label, PlainFun) ->
-    do([ErrorT ||
-           try
-               PlainFun(),
-               return(passed)
-           catch
-               Class:Reason:Trace ->
-                   fail({Label, Class, Reason, Trace})
-           end]).
+    do([
+        ErrorT
+     || try
+            PlainFun(),
+            return(passed)
+        catch
+            Class:Reason:Trace ->
+                fail({Label, Class, Reason, Trace})
+        end
+    ]).

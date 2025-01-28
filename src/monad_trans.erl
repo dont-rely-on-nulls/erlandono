@@ -12,10 +12,14 @@
 -compile({parse_transform, do}).
 
 %% Monad primitives
--callback '>>='(monad:monadic(TM, A), fun( (A) -> monad:monadic(TM, B) ), M) -> monad:monadic(TM, B) when TM :: monad:monad(), M :: monad:monad().
+-callback '>>='(monad:monadic(TM, A), fun((A) -> monad:monadic(TM, B)), M) ->
+    monad:monadic(TM, B)
+when
+    TM :: monad:monad(), M :: monad:monad().
 -callback return(A, M) -> monad:monadic(TM, A) when TM :: monad:monad(), M :: monad:monad().
 -callback fail(any(), M) -> monad:monadic(TM, _A) when TM :: monad:monad(), M :: monad:monad().
 
 %% Lift a computation form the argument monad to the constructed
 %% monad.
--callback lift(monad:monadic(M, A), M) -> monad:monadic(TM, A) when TM :: monad:monad(), M :: monad:monad().
+-callback lift(monad:monadic(M, A), M) -> monad:monadic(TM, A) when
+    TM :: monad:monad(), M :: monad:monad().

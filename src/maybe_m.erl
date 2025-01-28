@@ -16,7 +16,7 @@
 
 -module(maybe_m).
 
--export_type([maybe/1]).
+-export_type(['maybe'/1]).
 
 -behaviour(monad).
 -export(['>>='/2, return/1, fail/1]).
@@ -24,26 +24,21 @@
 -behaviour(monad_plus).
 -export([mzero/0, mplus/2]).
 
--type maybe(A) :: {just, A} | nothing.
+-type 'maybe'(A) :: {just, A} | nothing.
 
-
--spec '>>='(maybe(A), fun( (A) -> maybe(B) )) -> maybe(B).
+-spec '>>='('maybe'(A), fun((A) -> 'maybe'(B))) -> 'maybe'(B).
 '>>='({just, X}, Fun) -> Fun(X);
-'>>='(nothing,  _Fun) -> nothing.
+'>>='(nothing, _Fun) -> nothing.
 
-
--spec return(A) -> maybe(A).
+-spec return(A) -> 'maybe'(A).
 return(X) -> {just, X}.
 
-
--spec fail(any()) -> maybe(_A).
+-spec fail(any()) -> 'maybe'(_A).
 fail(_X) -> nothing.
 
-
--spec mzero() -> maybe(_A).
+-spec mzero() -> 'maybe'(_A).
 mzero() -> nothing.
 
-
--spec mplus(maybe(A), maybe(A)) -> maybe(A).
+-spec mplus('maybe'(A), 'maybe'(A)) -> 'maybe'(A).
 mplus(nothing, Y) -> Y;
-mplus(X,      _Y) -> X.
+mplus(X, _Y) -> X.

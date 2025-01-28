@@ -20,20 +20,23 @@
 
 -compile(export_all).
 
--record(r, { f1 = false,
-             f2 = wibble,
-             f3 = juice }).
+-record(r, {
+    f1 = false,
+    f2 = wibble,
+    f3 = juice
+}).
 
 test_cut() ->
-    F0 = foo(a, b, _, 5+6, _),
+    F0 = foo(a, b, _, 5 + 6, _),
     F1 = F0(_, e),
     ok = F1(c),
-    F2 = _(1,2),
+    F2 = _(1, 2),
     3 = F2(fun erlang:'+'/2),
     -1 = F2(fun erlang:'-'/2),
     F3 = _:foo(a, b, c, _, e),
     ok = F3(?MODULE, 11),
-    F4 = _:_(_), %% this isn't getting silly at all...
+    %% this isn't getting silly at all...
+    F4 = _:_(_),
     true = 3 == F4(math, sqrt, 9).
 
 foo(a, b, c, 11, e) -> ok.
@@ -82,8 +85,8 @@ test_cut_record_nested() ->
 test_cut_map() ->
     true = #{} =/= #{f3 => _},
     orange = maps:get(f3, (#{f3 => _})(orange)),
-    #{f1 := foo, f2 := bar, f3 := baz}
-        = (#{f1 => _, f3 => _, f2 => _})(foo, baz, bar),
+    #{f1 := foo, f2 := bar, f3 := baz} =
+        (#{f1 => _, f3 => _, f2 => _})(foo, baz, bar),
     M = #{f1 => false, f2 => wibble, f3 => juice},
     F = M#{f3 => _, f2 => _},
     wobble = maps:get(f2, F(orange, wobble)),
@@ -108,10 +111,10 @@ test_cut_binary() ->
     <<1:1/unsigned, 1:1/unsigned, 1:1/unsigned, 1:1/unsigned>> = G(4).
 
 test_cut_list() ->
-    F = [_|_],
-    [a,b] = F(a,[b]),
+    F = [_ | _],
+    [a, b] = F(a, [b]),
     G = [_, _ | [33]],
-    [a,b,33] = G(a,b),
+    [a, b, 33] = G(a, b),
 
     H = [1, _, _, [_], 5 | [6, [_] | [_]]],
     %% This is the same as:
@@ -127,7 +130,8 @@ test_cut_list() ->
     [b] = I1(b).
 
 test_cut_case() ->
-    F = case _ of
+    F =
+        case _ of
             N when is_integer(N) andalso 0 =:= (N rem 2) ->
                 even;
             N when is_integer(N) ->
@@ -140,34 +144,47 @@ test_cut_case() ->
     not_a_number = F(my_atom).
 
 test_cut_comprehensions() ->
-    F = << <<(1 + (X*2))>> || _ <- _, X <- _ >>, %% Note, this'll only be a /2 !
-    <<"AAA">> = F([a,b,c], [32]),
-    F1 = [ {X, Y, Z} || X <- _, Y <- _, Z <- _,
-                        math:pow(X,2) + math:pow(Y,2) == math:pow(Z,2) ],
-    [{3,4,5}, {4,3,5}, {6,8,10}, {8,6,10}] =
-        lists:usort(F1(lists:seq(1,10), lists:seq(1,10), lists:seq(1,10))).
+    %% Note, this'll only be a /2 !
+    F = <<<<(1 + (X * 2))>> || _ <- _, X <- _>>,
+    <<"AAA">> = F([a, b, c], [32]),
+    F1 = [
+        {X, Y, Z}
+     || X <- _,
+        Y <- _,
+        Z <- _,
+        math:pow(X, 2) + math:pow(Y, 2) == math:pow(Z, 2)
+    ],
+    [{3, 4, 5}, {4, 3, 5}, {6, 8, 10}, {8, 6, 10}] =
+        lists:usort(F1(lists:seq(1, 10), lists:seq(1, 10), lists:seq(1, 10))).
 
 test_cut_named_fun() ->
-    Add  = _ + _,
-    Fib  = fun Self (0) -> 1;
-               Self (1) -> 1;
-               Self (N) -> (Add(_, _))(N, Self(N-1))
-           end,
+    Add = _ + _,
+    Fib = fun
+        Self(0) -> 1;
+        Self(1) -> 1;
+        Self(N) -> (Add(_, _))(N, Self(N - 1))
+    end,
     true = (Fib(_))(10) =:= 55.
 
 test() ->
-    test:test([{?MODULE, [test_cut,
-                          test_cut_nested,
-                          test_cut_op,
-                          test_cut_unary_op,
-                          test_cut_tuple,
-                          test_cut_map,
-                          test_cut_map_nested,
-                          test_cut_record,
-                          test_cut_record_nested,
-                          test_cut_binary,
-                          test_cut_list,
-                          test_cut_case,
-                          test_cut_comprehensions,
-                          test_cut_named_fun]}],
-              [report, {name, ?MODULE}]).
+    test:test(
+        [
+            {?MODULE, [
+                test_cut,
+                test_cut_nested,
+                test_cut_op,
+                test_cut_unary_op,
+                test_cut_tuple,
+                test_cut_map,
+                test_cut_map_nested,
+                test_cut_record,
+                test_cut_record_nested,
+                test_cut_binary,
+                test_cut_list,
+                test_cut_case,
+                test_cut_comprehensions,
+                test_cut_named_fun
+            ]}
+        ],
+        [report, {name, ?MODULE}]
+    ).

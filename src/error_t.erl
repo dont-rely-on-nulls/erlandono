@@ -24,26 +24,25 @@
 
 -opaque error_t(M, A) :: monad:monadic(M, ok | {ok, A} | {error, any()}).
 
-
 -spec new(M) -> TM when TM :: monad:monad(), M :: monad:monad().
 new(M) ->
     {?MODULE, M}.
 
-
--spec '>>='(error_t(M, A), fun( (A) -> error_t(M, B) ), M) -> error_t(M, B).
+-spec '>>='(error_t(M, A), fun((A) -> error_t(M, B)), M) -> error_t(M, B).
 '>>='(X, Fun, {?MODULE, M}) ->
-    do([M || R <- X,
-             case R of
-                 {error, _Err} = Error -> return(Error);
-                 {ok,  Result}         -> Fun(Result);
-                 ok                    -> Fun(ok)
-             end
-       ]).
-
+    do([
+        M
+     || R <- X,
+        case R of
+            {error, _Err} = Error -> return(Error);
+            {ok, Result} -> Fun(Result);
+            ok -> Fun(ok)
+        end
+    ]).
 
 -spec return(A, M) -> error_t(M, A).
 return(ok, {?MODULE, M}) -> M:return(ok);
-return(X , {?MODULE, M}) -> M:return({ok, X}).
+return(X, {?MODULE, M}) -> M:return({ok, X}).
 
 %% This is the equivalent of
 %%     fail msg = ErrorT $ return (Left (strMsg msg))
@@ -58,12 +57,13 @@ return(X , {?MODULE, M}) -> M:return({ok, X}).
 fail(E, {?MODULE, M}) ->
     M:return({error, E}).
 
-
 -spec run(error_t(M, A), M) -> monad:monadic(M, ok | {ok, A} | {error, any()}).
 run(EM, _M) -> EM.
 
-
 -spec lift(monad:monadic(M, A), M) -> error_t(M, A).
 lift(X, {?MODULE, M}) ->
-    do([M || A <- X,
-             return({ok, A})]).
+    do([
+        M
+     || A <- X,
+        return({ok, A})
+    ]).
