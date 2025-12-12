@@ -11,9 +11,7 @@ in
 }:
 let
   self = packages // (overrides self packages);
-  packages =
-    with self;
-    {
-    };
+  packages = with self; {
+  };
 in
 self
