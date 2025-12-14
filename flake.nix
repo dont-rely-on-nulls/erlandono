@@ -1,14 +1,11 @@
 {
+  description = "Erlandono's flakes";
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    flake-utils = {
-      url = "github:numtide/flake-utils/v1.0.0";
-    };
-
-    devenv = {
-      url = "github:cachix/devenv";
-      inputs.nixpkgs.follows = "nixpkgs";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
     };
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
@@ -18,88 +15,73 @@
     {
       self,
       nixpkgs,
-      devenv,
-      flake-utils,
+      flake-parts,
       treefmt-nix,
       ...
     }@inputs:
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-        };
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
 
-        treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+      perSystem =
+        { pkgs, system, ... }:
+        let
+          erlangLatest = pkgs.erlang;
+          lib_name = "erlandono";
+          rebar_config = builtins.readFile ./rebar.config;
+          match = builtins.match ".*release,.+${lib_name}, \"([0-9.]+)\".*" rebar_config;
+          lib_version = builtins.head match;
 
-        # Erlang
-        erlangLatest = pkgs.erlang_27;
-        lib_name = "erlandono";
-        lib_version = "3.1.3";
+          treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+        in
+        {
+          _module.args.pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
 
-        mkEnvVars = pkgs: {
-          LOCALE_ARCHIVE = pkgs.lib.optionalString pkgs.stdenv.isLinux "${pkgs.glibcLocales}/lib/locale/locale-archive";
-          LANG = "en_US.UTF-8";
-          # https://www.erlang.org/doc/man/kernel_app.html
-          ERL_AFLAGS = "-kernel shell_history enabled";
-        };
-      in
-      {
-        # nix build
-        packages = {
-          # Leverages nix to build the erlang backend release
           # nix build
-          default =
-            let
-              deps = import ./rebar-deps.nix {
-                inherit (pkgs) fetchHex fetchFromGitHub fetchgit;
-                builder = pkgs.beamPackages.buildRebar3;
+          packages = {
+            default =
+              let
+                deps = import ./rebar-deps.nix {
+                  inherit (pkgs) fetchHex fetchFromGitHub fetchgit;
+                  builder = pkgs.beamPackages.buildRebar3;
+                };
+              in
+              pkgs.beamPackages.buildRebar3 {
+                name = lib_name;
+                version = lib_version;
+                src = ./.;
+                profile = "prod";
+                beamDeps = builtins.attrValues deps;
               };
-            in
-            pkgs.beamPackages.buildRebar3 {
-              name = lib_name;
-              version = lib_version;
-              src = ./.;
-              profile = "prod";
-              beamDeps = builtins.attrValues deps;
+          };
+
+          devShells = {
+            # nix develop .
+            default = pkgs.mkShell {
+              packages =
+                with pkgs;
+                [
+                  erlang-language-platform
+                  rebar3
+                ]
+                ++ [ erlangLatest ];
             };
-        };
-
-        devShells = {
-          # `nix develop .#ci`
-          ci = pkgs.mkShell {
-            env = mkEnvVars pkgs;
-            buildInputs = with pkgs; [
-              erlangLatest
-              rebar3
-            ];
           };
 
-          # `nix develop`
-          default = devenv.lib.mkShell {
-            inherit inputs pkgs;
-            modules = [
-              (
-                { pkgs, lib, ... }:
-                {
-                  languages.erlang = {
-                    enable = true;
-                    package = erlangLatest;
-                  };
+          # nix fmt
+          formatter = treefmtEval.config.build.wrapper;
 
-                  env = mkEnvVars pkgs;
-
-                  enterShell = ''
-                    echo "Starting Development Environment..."
-                  '';
-                }
-              )
-            ];
+          # nix flake check --all-systems
+          checks = {
+            formatting = treefmtEval.config.build.check self;
           };
         };
-
-        # nix fmt
-        formatter = treefmtEval.config.build.wrapper;
-      }
-    );
+    };
 }
