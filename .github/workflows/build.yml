@@ -48,4 +48,4 @@ jobs:
 
       - name: "[erlandono] Test"
         run: |
-          nix develop .#ci --impure -c rebar3 as test ct
+          nix develop --impure -c rebar3 as test ct
